@@ -1,0 +1,11 @@
+# ovis
+pandas
+streamlit
+
+# docs
+sphinx
+sphinx_gallery
+sphinx-rtd-theme
+notebook
+pandoc
+nbsphinx
