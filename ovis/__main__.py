@@ -9,8 +9,8 @@ from ovis import app
 
 
 def main() -> None:
-    streamlit_script_path = os.path.join(os.path.dirname(app.__file__), 'main.py')
-    sys.argv = ['streamlit', 'run', streamlit_script_path]
+    main_path = os.path.join(os.path.dirname(app.__file__), 'main.py')
+    sys.argv = ['streamlit', 'run', main_path]
     runpy.run_module('streamlit', run_name = '__main__')
 
 

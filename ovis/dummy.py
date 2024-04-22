@@ -12,3 +12,8 @@ def mycosdeg(deg: float) -> float:
     return math.cos(math.radians(deg))
 
 
+#%% Misc
+
+__all__ = ['mycosdeg']
+
+

@@ -6,6 +6,7 @@ import streamlit as st
 
 from ovis.app.loading import loading_tab
 from ovis.app.analysis import analysis_tab
+from ovis.app.settings import settings_tab
 
 
 #%% Functions
@@ -13,11 +14,13 @@ from ovis.app.analysis import analysis_tab
 def main():
     '''App function'''
     df, cols = None, None
-    tab1, tab2 = st.tabs(['Загрузка', 'Анализ'])
+    tab1, tab2, tab3 = st.tabs(['Загрузка', 'Анализ', 'Настройки'])
     with tab1:
         df, cols = loading_tab()
     with tab2:
         analysis_tab(df, cols)
+    with tab3:
+        settings_tab()
     
     return
 
