@@ -2,11 +2,11 @@
 
 #%% Imports
 
-import os, webbrowser
+import webbrowser
 
 import streamlit as st
 
-import ovis
+from ovis.misc import get_docs_path
 
 
 #%% Functions
@@ -14,7 +14,7 @@ import ovis
 def settings_tab() -> None:
     '''Settings tab'''
     if st.button('Документация'):
-        path = os.path.join(os.path.dirname(ovis.__file__), 'docs', 'index.html')
+        path = get_docs_path()
         webbrowser.open(path, new = 2)
     
     return
