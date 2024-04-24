@@ -6,6 +6,7 @@ streamlit
 sphinx
 sphinx_gallery
 sphinx-rtd-theme
+sphinx-simplepdf
 notebook
 pandoc
 nbsphinx
