@@ -1,0 +1,114 @@
+import numpy as np
+import plotly.graph_objects as go
+from scipy.optimize import fsolve
+from sklearn.metrics import r2_score
+
+
+def exponential(x, a, b):
+    return a * np.exp(b * x)
+
+
+def fit_exponential(x, y):
+    b, log_a = np.linalg.lstsq(np.c_[x, np.ones_like(x)],
+                               np.log(y),
+                               rcond=None)[0]
+    a = np.exp(log_a)
+
+    return [a, b]
+
+
+def find_intersection_point(data):
+    x = data[:, 0]
+    y = data[:, 1]
+
+    popt1 = fit_exponential(x[:15], y[:15])
+    popt2 = fit_exponential(x[14:], y[14:])
+    error1 = r2_score(y[:15], exponential(x[:15], *popt1))
+    error2 = r2_score(y[14:], exponential(x[14:], *popt2))
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=x[:15],
+                             y=y[:15],
+                             mode='markers',
+                             name='Измерения от 6°C до 20°C',
+                             marker=dict(color='#F0A58F',
+                                         size=8,
+                                         line=dict(width=1,
+                                                   color='DarkSlateGrey'))))
+
+    fig.add_trace(go.Scatter(x=x[14:],
+                             y=y[14:],
+                             mode='markers',
+                             name='Измерения от 20°C до 28°C',
+                             marker=dict(color='#AF4BCE',
+                                         size=8,
+                                         line=dict(width=1,
+                                                   color='DarkSlateGrey'))))
+
+    fig.add_trace(go.Scatter(x=x[:20],
+                             y=exponential(x[:20], *popt1),
+                             mode='lines',
+                             line=dict(dash='dash',
+                                       color='#F0A58F'),
+                             name=f'{round(popt1[0], 2)} * exp({round(popt1[1], 3)} * x) | R^2 = {round(error1, 3)}'))
+
+    fig.add_trace(go.Scatter(x=x[9:],
+                             y=exponential(x[9:], *popt2),
+                             mode='lines',
+                             line=dict(dash='dash',
+                                       color='#AF4BCE'),
+                             name=f'{round(popt2[0], 2)} * exp({round(popt2[1], 3)} * x) | R^2 = {round(error2, 3)}'))
+
+    fig.update_layout(xaxis_title='Температура, °C',
+                      yaxis_title='Вязкость пластовой нефти, мПа⋅с',
+                      autosize=False,
+                      width=900,
+                      height=500,
+                      plot_bgcolor='white')
+
+    fig.update_xaxes(mirror=True,
+                     ticks='outside',
+                     showline=True,
+                     linecolor='black',
+                     gridcolor='lightgrey')
+
+    fig.update_yaxes(mirror=True,
+                     ticks='outside',
+                     showline=True,
+                     linecolor='black',
+                     gridcolor='lightgrey')
+
+    accepted_total_error = (error1 > 0.8) & (error2 > 0.8)
+    if accepted_total_error:
+        def equations(variables):
+            x0, y0 = variables
+            eq1 = exponential(x0, *popt1) - y0
+            eq2 = exponential(x0, *popt2) - y0
+            return [eq1, eq2]
+
+        intersection_point = fsolve(equations, (20, 200))
+
+        fig.add_trace(go.Scatter(x=[intersection_point[0], intersection_point[0]],
+                                 y=[intersection_point[1], np.max(y) / 2],
+                                 mode='lines',
+                                 line=dict(color='black',
+                                           dash='dash',
+                                           width=1.25),
+                                 showlegend=False))
+
+        label = f'ТСФП = {round(intersection_point[0], 3)} °С'
+
+        fig.add_annotation(x=intersection_point[0],
+                           y=np.max(y) / 2,
+                           text=label,
+                           showarrow=False,
+                           yshift=10,
+                           xshift=50,
+                           font=dict(size=15))
+
+        fig.show()
+    else:
+        intersection_point = 'Approximation failed'
+
+    return intersection_point

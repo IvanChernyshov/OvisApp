@@ -2,8 +2,6 @@ import pickle
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
-from matplotlib import pyplot as plt
 
 from ovis.constants import sel_features
 
@@ -27,9 +25,5 @@ def temperature_viscosity_curve(features_df):
     new_df.columns = features_df.columns
     new_df['Температура пласта, °С'] = temp_range
     predicted_viscosity = predict_viscosity(new_df)
-    sns.scatterplot(x=temp_range, y=predicted_viscosity)
+    return [temp_range, predicted_viscosity]
 
-    plt.show()
-
-
-data_test = pd.read_csv('data/sample_test.csv')
