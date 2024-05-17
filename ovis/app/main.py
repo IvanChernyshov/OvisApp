@@ -5,22 +5,24 @@
 import streamlit as st
 
 from ovis.app.loading import loading_tab
-from ovis.app.analysis import analysis_tab
-from ovis.app.settings import settings_tab
+from ovis.app.pstp import pstp_tab
+from ovis.app.plots import plots_tab
 
 
 #%% Functions
 
 def main():
     '''App function'''
-    df, cols = None, None
-    tab1, tab2, tab3 = st.tabs(['Загрузка', 'Анализ', 'Настройки'])
+    st.title('Ovis: анализ СФП нефти')
+    tab1, tab2, tab3 = st.tabs(['Загрузка данных',
+                                'Проверка определения ТСФП',
+                                'Временные зависимости'])
     with tab1:
-        df, cols = loading_tab()
+        loading_tab()
     with tab2:
-        analysis_tab(df, cols)
+        pstp_tab()
     with tab3:
-        settings_tab()
+        plots_tab()
     
     return
 

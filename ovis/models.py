@@ -32,7 +32,7 @@ class Model():
             empty = pd.DataFrame({col: np.nan for col in self.features \
                                   if col not in feature_vectors},
                                  feature_vectors.index)
-            x = pd.concat([feature_vectors, empty])
+            x = pd.concat([feature_vectors, empty], axis = 1)
         x = x[self.features]
         
         return self.model.predict(x)
