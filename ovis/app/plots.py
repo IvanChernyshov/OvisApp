@@ -58,6 +58,7 @@ def plots_tab():
     fig.add_trace(go.Scatter(x = data[lab_x], y = data[lab_y], mode = 'markers'))
     # show figure
     st.plotly_chart(fig)
+    st.dataframe(df.loc[data.index])
     
     return
 

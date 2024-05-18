@@ -2,7 +2,9 @@
 
 #%% Imports
 
-import os, pkgutil
+import os, json, pkgutil
+
+import pandas as pd
 
 
 #%% Functions
@@ -30,9 +32,26 @@ def get_docs_path() -> str:
     return path
 
 
+def get_col_types() -> dict[str, str]:
+    '''Returns dtypes for input CSV file'''
+    content = pkgutil.get_data('ovis', 'data/column_types.json')
+    dtypes = json.loads(content)
+    
+    return dtypes
+
+
+def read_csv(inpf):
+    '''Reads CSV with oil data'''
+    df = pd.read_csv(inpf, dtype = get_col_types(), index_col = False)
+    if 'unnamed' in df.columns[0].lower():
+        df = df.iloc[:,1:]
+    
+    return df
+
+
 
 #%% Misc
 
-__all__ = ['get_app_dir', 'get_docs_path']
+__all__ = ['read_csv', 'get_app_dir', 'get_docs_path', 'get_col_types']
 
 

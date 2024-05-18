@@ -52,10 +52,12 @@ def model_from_model_name(name: str) -> Model:
 #%% Models
 
 viscUniModel = model_from_model_name('viscUniModel')
+viscAccModel = model_from_model_name('viscAccModel')
 
 
 #%% Misc
 
-__all__ = ['viscUniModel', 'Model', 'model_from_model_name']
+__all__ = ['viscUniModel', 'viscAccModel',
+           'Model', 'model_from_model_name']
 
 

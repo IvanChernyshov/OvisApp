@@ -10,12 +10,10 @@ from sklearn.metrics import r2_score
 
 import plotly.graph_objects as go
 
-from ovis.models import viscUniModel
-
 
 #%% Functions
 
-def prepare_fv(df, nrow):
+def prepare_fv(df, nrow, model):
     '''Prepares mu(temp) ~ y(x) for fitting two exponents'''
     # predict mu
     temp_range = [i for i in range(6, 29, 1)]
@@ -23,7 +21,8 @@ def prepare_fv(df, nrow):
     fvs = pd.DataFrame(np.repeat(row.values, len(temp_range), axis = 0))
     fvs.columns = df.columns
     fvs['Температура пласта, °С'] = temp_range
-    predicted_viscosity = viscUniModel.predict(fvs)
+    fvs = fvs.astype(dtype = df.dtypes)
+    predicted_viscosity = model.predict(fvs)
     x, y = np.array(temp_range), np.array(predicted_viscosity)
     
     return x, y
@@ -42,7 +41,32 @@ def fit_exponential(x, y):
     return [a, b]
 
 
-def find_intersection_point(x, y):
+def get_intersection_point(x, y):
+    '''Get parameters of intersection of two exponents for mu(T)'''
+    # find fitting parameters
+    popt1 = fit_exponential(x[:15], y[:15])
+    popt2 = fit_exponential(x[14:], y[14:])
+    error1 = r2_score(y[:15], exponential(x[:15], *popt1))
+    error2 = r2_score(y[14:], exponential(x[14:], *popt2))
+    accepted_total_error = (error1 > 0.8) & (error2 > 0.8)
+    
+    # find intersection
+    if accepted_total_error:
+        
+        def equations(variables):
+            x0, y0 = variables
+            eq1 = exponential(x0, *popt1) - y0
+            eq2 = exponential(x0, *popt2) - y0
+            return [eq1, eq2]
+
+        T_pst, mu_pst = fsolve(equations, (20, 200))
+    else:
+        T_pst, mu_pst = None, None
+    
+    return T_pst, mu_pst
+
+
+def plot_intersection_point(x, y):
     
     popt1 = fit_exponential(x[:15], y[:15])
     popt2 = fit_exponential(x[14:], y[14:])
@@ -130,15 +154,15 @@ def find_intersection_point(x, y):
                            xshift=50,
                            font=dict(size=15))
 
-        fig.show()
     else:
         intersection_point = 'Approximation failed'
 
-    return fig, intersection_point
+    return fig
+
 
 
 #%% Misc
 
-__all__ = ['prepare_fv', 'find_intersection_point']
+__all__ = ['prepare_fv', 'get_intersection_point', 'plot_intersection_point']
 
 
