@@ -46,23 +46,15 @@ def get_intersection_point(x, y):
     # find fitting parameters
     popt1 = fit_exponential(x[:15], y[:15])
     popt2 = fit_exponential(x[14:], y[14:])
-    error1 = r2_score(y[:15], exponential(x[:15], *popt1))
-    error2 = r2_score(y[14:], exponential(x[14:], *popt2))
-    accepted_total_error = (error1 > 0.8) & (error2 > 0.8)
-    
+
     # find intersection
-    if accepted_total_error:
-        
-        def equations(variables):
+    def equations(variables):
             x0, y0 = variables
             eq1 = exponential(x0, *popt1) - y0
             eq2 = exponential(x0, *popt2) - y0
             return [eq1, eq2]
 
-        T_pst, mu_pst = fsolve(equations, (20, 200))
-    else:
-        T_pst, mu_pst = None, None
-    
+    T_pst, mu_pst = fsolve(equations, (20, 200))
     return T_pst, mu_pst
 
 
@@ -126,36 +118,31 @@ def plot_intersection_point(x, y):
                      linecolor='black',
                      gridcolor='lightgrey')
 
-    accepted_total_error = (error1 > 0.8) & (error2 > 0.8)
-    if accepted_total_error:
-        def equations(variables):
+    def equations(variables):
             x0, y0 = variables
             eq1 = exponential(x0, *popt1) - y0
             eq2 = exponential(x0, *popt2) - y0
             return [eq1, eq2]
 
-        intersection_point = fsolve(equations, (20, 200))
+    intersection_point = fsolve(equations, (20, 200))
 
-        fig.add_trace(go.Scatter(x=[intersection_point[0], intersection_point[0]],
-                                 y=[intersection_point[1], np.max(y) / 2],
-                                 mode='lines',
-                                 line=dict(color='black',
-                                           dash='dash',
-                                           width=1.25),
-                                 showlegend=False))
+    fig.add_trace(go.Scatter(x=[intersection_point[0], intersection_point[0]],
+                             y=[intersection_point[1], np.max(y) / 2],
+                             mode='lines',
+                             line=dict(color='black',
+                                       dash='dash',
+                                       width=1.25),
+                             showlegend=False))
 
-        label = f'ТСФП = {round(intersection_point[0], 3)} °С'
+    label = f'ТСФП = {round(intersection_point[0], 3)} °С'
 
-        fig.add_annotation(x=intersection_point[0],
-                           y=np.max(y) / 2,
-                           text=label,
-                           showarrow=False,
-                           yshift=10,
-                           xshift=50,
-                           font=dict(size=15))
-
-    else:
-        intersection_point = 'Approximation failed'
+    fig.add_annotation(x=intersection_point[0],
+                       y=np.max(y) / 2,
+                       text=label,
+                       showarrow=False,
+                       yshift=10,
+                       xshift=50,
+                       font=dict(size=15))
 
     return fig
 
