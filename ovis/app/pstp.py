@@ -17,8 +17,8 @@ def pstp_tab():
         return
     models = {'Точная модель': viscAccModel,
               'Универсальная модель': viscUniModel}
-    model_name = st.selectbox('Выберите модель',
-                              ['Точная модель', 'Универсальная модель'])
+    model_name = st.selectbox(label = 'Выберите модель', key = 'pstp_model',
+                              options = ['Точная модель', 'Универсальная модель'])
     model = models[model_name]
     nrow = st.selectbox('Выберите номер измерения',
                         [None] + list(st.session_state.df.index))

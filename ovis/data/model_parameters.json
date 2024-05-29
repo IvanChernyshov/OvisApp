@@ -2,6 +2,7 @@
   "viscUniModel": {
     "model_path": "data/hgbr_model.pkl",
     "all_features_required": false,
+    "predicts_log": false,
     "features": [
       "Температура пласта, °С",
       "Давление пласта, МПа",
@@ -27,6 +28,7 @@
   "viscAccModel": {
     "model_path": "data/xgb_temp_log_model.pkl",
     "all_features_required": true,
+    "predicts_log": true,
     "features": [
       "Температура пласта, °С",
       "Давление пласта, МПа",

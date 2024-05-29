@@ -16,9 +16,10 @@ class Model():
     '''Wrapper for viscosity models'''
     
     def __init__(self, model_path: str, features: list[str],
-                 all_features_required: bool) -> Model:
+                 all_features_required: bool, predicts_log: bool) -> Model:
         self.features = features
         self.all_features_required = all_features_required
+        self.predicts_log = predicts_log
         content = pkgutil.get_data('ovis', model_path)
         self.model = pickle.loads(content)
     
@@ -34,8 +35,11 @@ class Model():
                                  feature_vectors.index)
             x = pd.concat([feature_vectors, empty], axis = 1)
         x = x[self.features]
+        outp = self.model.predict(x)
+        if self.predicts_log:
+            outp = [10**x for x in outp]
         
-        return self.model.predict(x)
+        return outp
 
 
 def model_from_model_name(name: str) -> Model:
@@ -43,7 +47,8 @@ def model_from_model_name(name: str) -> Model:
     info = json.loads(pkgutil.get_data('ovis', 'data/model_parameters.json'))
     model = Model(info[name]['model_path'],
                   info[name]['features'],
-                  info[name]['all_features_required'])
+                  info[name]['all_features_required'],
+                  info[name]['predicts_log'])
     
     return model
 

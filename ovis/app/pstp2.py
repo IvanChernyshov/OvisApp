@@ -17,8 +17,8 @@ def pstp2_tab():
     # select model
     models = {'Точная модель': viscAccModel,
               'Универсальная модель': viscUniModel}
-    model_name = st.selectbox('Выберите модель',
-                              ['Точная модель', 'Универсальная модель'])
+    model_name = st.selectbox(label = 'Выберите модель', key = 'pstp2_model',
+                              options = ['Точная модель', 'Универсальная модель'])
     model = models[model_name]
     # set numeric parameters
     col1, col2 = st.columns(2)
